@@ -12,6 +12,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+const CACHE_MARVEL = 'CACHE_MARVEL'
 
 clientsClaim();
 
@@ -70,3 +71,10 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+self.addEventListener('fetch',async (event) => {
+  if(event.request.url.includes('public/characters')){
+    const cacheMV = await caches.open(CACHE_MARVEL);
+    const networkResponse = await fetch(event.request);
+    cacheMV.put(event.request,networkResponse);
+  }
+})
